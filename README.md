@@ -89,8 +89,8 @@ Before you start, make sure you have:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/ak1nokap/oncoresearch-ai.git
-cd oncoresearch-ai
+git clone https://github.com/ak1nokap/OncoResearchAi.git
+cd OncoResearchAi
 ```
 
 2. Create and activate a virtual environment:
