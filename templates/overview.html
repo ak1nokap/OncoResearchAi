@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <div class="eyebrow">Version 2.0 is live</div>
+        <h1>Research analytics that <span class="accent">move oncology teams forward</span></h1>
+        <p>
+            Explore AI-driven cancer diagnostics research in one elegant workspace. Track new papers,
+            surface trends, compare methods, and ask grounded questions against your research corpus.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'research:paper_list' %}" class="button">Explore Papers</a>
+            <a href="{% url 'research:chat' %}" class="button secondary">Open AI Workspace</a>
+        </div>
+        <div class="topbar-actions muted" style="margin-top: 22px;">
+            <span>Trusted for PubMed and arXiv monitoring</span>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="window-dots"><span></span><span></span><span></span></div>
+        <div class="dashboard-preview">
+            <div class="preview-metrics">
+                <div class="mini-panel">
+                    <div class="mini-label">Papers tracked</div>
+                    <div class="mini-value">{{ total_papers }}</div>
+                    <div class="mini-trend">+ live indexed research</div>
+                </div>
+                <div class="mini-panel">
+                    <div class="mini-label">PubMed share</div>
+                    <div class="mini-value">{{ pubmed_count }}</div>
+                    <div class="mini-trend">+ clinical evidence</div>
+                </div>
+                <div class="mini-panel">
+                    <div class="mini-label">arXiv share</div>
+                    <div class="mini-value">{{ arxiv_count }}</div>
+                    <div class="mini-trend">+ frontier models</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="mini-label">Research momentum</div>
+                <svg class="chart-line" viewBox="0 0 420 120" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(255,112,127,0.34)"></stop>
+                            <stop offset="100%" stop-color="rgba(255,112,127,0)"></stop>
+                        </linearGradient>
+                    </defs>
+                    <path class="area" d="M0,96 C45,91 75,84 110,80 C145,76 173,102 205,91 C240,78 255,48 292,59 C326,70 352,97 387,82 C402,76 413,68 420,44 L420,120 L0,120 Z"></path>
+                    <path d="M0,96 C45,91 75,84 110,80 C145,76 173,102 205,91 C240,78 255,48 292,59 C326,70 352,97 387,82 C402,76 413,68 420,44"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <div class="eyebrow" style="margin-bottom: 14px;">Features</div>
+        <h2 class="section-title">Everything your team needs. <span class="accent">Nothing you do not.</span></h2>
+        <p class="section-copy">
+            The platform combines ingestion, tagging, search, analytics, and evidence-aware AI answers in one
+            interface so researchers and clinicians can move faster.
+        </p>
+    </div>
+
+    <div class="grid grid-2">
+        <article class="feature-panel">
+            <h3>Unified research intake</h3>
+            <p class="muted">
+                New publications are collected from PubMed and arXiv, normalized, enriched, and stored in a single searchable dataset.
+            </p>
+            <div class="badges">
+                <span class="badge">Automated ingestion</span>
+                <span class="badge">Metadata extraction</span>
+                <span class="badge">OpenAI summaries</span>
+            </div>
+        </article>
+        <article class="feature-panel">
+            <h3>Semantic exploration</h3>
+            <p class="muted">
+                Search by concept instead of just keywords. The site uses embeddings to rank papers by meaning and research relevance.
+            </p>
+            <div class="badges">
+                <span class="badge">Vector search</span>
+                <span class="badge">Cancer tags</span>
+                <span class="badge">AI method tags</span>
+            </div>
+        </article>
+        <article class="feature-panel">
+            <h3>Evidence-grounded AI workspace</h3>
+            <p class="muted">
+                Ask high-level questions and get concise answers based only on retrieved papers already stored in the portal.
+            </p>
+            <div class="badges">
+                <span class="badge">RAG workflow</span>
+                <span class="badge">Paper citations</span>
+                <span class="badge">Safe responses</span>
+            </div>
+        </article>
+        <article class="feature-panel">
+            <h3>Visual research monitoring</h3>
+            <p class="muted">
+                Dashboards show publication trends, leading cancer types, top AI methods, and the newest additions to the corpus.
+            </p>
+            <div class="badges">
+                <span class="badge">Trend charts</span>
+                <span class="badge">Recent activity</span>
+                <span class="badge">RSS feed</span>
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="section">
+    <div class="stats">
+        <section class="stat">
+            <div class="stat-label">Total papers</div>
+            <div class="stat-value">{{ total_papers }}</div>
+            <div class="stat-note">Curated oncology AI papers in the database.</div>
+        </section>
+        <section class="stat">
+            <div class="stat-label">PubMed</div>
+            <div class="stat-value">{{ pubmed_count }}</div>
+            <div class="stat-note">Clinical and peer-reviewed sources.</div>
+        </section>
+        <section class="stat">
+            <div class="stat-label">arXiv</div>
+            <div class="stat-value">{{ arxiv_count }}</div>
+            <div class="stat-note">Fast-moving preprint and ML research.</div>
+        </section>
+        <section class="stat">
+            <div class="stat-label">Top categories</div>
+            <div class="stat-value">{{ top_cancer_types|length }}</div>
+            <div class="stat-note">Leading cancer areas currently indexed.</div>
+        </section>
+    </div>
+</section>
+
+<section class="section">
+    <div class="grid grid-2">
+        <article class="card">
+            <h2>Top cancer types</h2>
+            <ul class="list-clean">
+                {% for item in top_cancer_types %}
+                <li>
+                    <strong>{{ item.cancer_type }}</strong>
+                    <div class="meta-line">{{ item.count }} papers</div>
+                </li>
+                {% empty %}
+                <li class="muted">No categorized papers yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="card">
+            <h2>Latest papers</h2>
+            <ul class="list-clean">
+                {% for paper in latest_papers %}
+                <li>
+                    <a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer"><strong>{{ paper.title }}</strong></a>
+                    <div class="meta-line">{{ paper.source }} | {{ paper.published_date|date:"Y-m-d" }}</div>
+                </li>
+                {% empty %}
+                <li class="muted">No papers available yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </div>
+</section>
+{% endblock %}

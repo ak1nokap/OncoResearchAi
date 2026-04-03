@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Research Papers{% endblock %}
+
+{% block content %}
+<section class="hero" style="grid-template-columns: minmax(0, 1fr) 360px;">
+    <div>
+        <div class="eyebrow">Research Library</div>
+        <h1>Find the papers that <span class="accent">actually matter</span></h1>
+        <p>
+            Search by concept, cancer type, source, or modeling approach. Every result is presented in a cleaner,
+            review-friendly layout with summaries and direct access to the abstract.
+        </p>
+    </div>
+    <div class="stat-grid">
+        <section class="stat">
+            <div class="stat-label">Found papers</div>
+            <div class="stat-value">{{ total_count }}</div>
+            <div class="stat-note">Matches for your current filters.</div>
+        </section>
+        <section class="stat">
+            <div class="stat-label">Current query</div>
+            <div class="stat-value" style="font-size: 1.5rem;">{{ query|default:"All papers" }}</div>
+            <div class="stat-note">Semantic ranking when query text is present.</div>
+        </section>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 8px;">
+    <article class="card">
+        <form method="get" class="filters-form">
+            <div class="filters-row">
+                <input type="text" name="q" placeholder="Search by concept, method, or cancer type" value="{{ query }}">
+                <input type="text" name="cancer_type" placeholder="Cancer type" value="{{ cancer_type }}">
+                <input type="text" name="ai_method" placeholder="AI method" value="{{ ai_method }}">
+                <select name="source">
+                    <option value="">All sources</option>
+                    {% for value, label in source_choices %}
+                    <option value="{{ value }}" {% if source == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="topbar-actions">
+                <button type="submit">Search Papers</button>
+                <a href="{% url 'research:paper_list' %}" class="button secondary">Reset filters</a>
+            </div>
+        </form>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'research:save_search' %}" style="margin-top: 14px;">
+            {% csrf_token %}
+            <input type="hidden" name="query" value="{{ query }}">
+            <input type="hidden" name="cancer_type" value="{{ cancer_type }}">
+            <input type="hidden" name="ai_method" value="{{ ai_method }}">
+            <button type="submit" class="secondary">Save search</button>
+        </form>
+        {% else %}
+        <p class="muted" style="margin: 14px 0 0;">
+            <a href="{% url 'login' %}">Log in</a> to save searches and build a personal reading queue.
+        </p>
+        {% endif %}
+    </article>
+</section>
+
+<section class="section" style="padding-top: 10px;">
+    <div class="grid">
+        {% for paper in page_obj %}
+        <article class="card paper-card">
+            <div class="badges">
+                <span class="badge">{{ paper.source|upper }}</span>
+                <span class="badge">Cancer: {{ paper.cancer_type|default:"unknown" }}</span>
+                <span class="badge">Method: {{ paper.ai_method|default:"unknown" }}</span>
+            </div>
+
+            <h2 class="paper-title">
+                <a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ paper.title }}</a>
+            </h2>
+
+            <div class="paper-meta">
+                {{ paper.authors|default:"Unknown authors" }}<br>
+                Published {{ paper.published_date|date:"Y-m-d H:i" }}
+            </div>
+
+            {% if paper.summary %}
+            <div class="summary">{{ paper.summary }}</div>
+            {% else %}
+            <div class="summary muted">No AI summary is available for this paper yet.</div>
+            {% endif %}
+
+            <div class="topbar-actions">
+                <a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer" class="button">Open paper</a>
+                {% if user.is_authenticated %}
+                    {% if paper.id in saved_paper_ids %}
+                    <form method="post" action="{% url 'research:remove_saved_paper' paper.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="button saved">Saved</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'research:save_paper' paper.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="button secondary">Save paper</button>
+                    </form>
+                    {% endif %}
+                {% else %}
+                <a href="{% url 'login' %}" class="button secondary">Log in to save</a>
+                {% endif %}
+            </div>
+
+            {% if paper.abstract %}
+            <details>
+                <summary>Read abstract</summary>
+                <p class="summary">{{ paper.abstract }}</p>
+            </details>
+            {% endif %}
+        </article>
+        {% empty %}
+        <article class="card">
+            <h2>No papers found</h2>
+            <p class="muted">
+                Try widening the concept query, removing one of the filters, or switching to all sources.
+            </p>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page=1&q={{ query }}&cancer_type={{ cancer_type }}&ai_method={{ ai_method }}&source={{ source }}">First</a>
+    <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&cancer_type={{ cancer_type }}&ai_method={{ ai_method }}&source={{ source }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&cancer_type={{ cancer_type }}&ai_method={{ ai_method }}&source={{ source }}">Next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&cancer_type={{ cancer_type }}&ai_method={{ ai_method }}&source={{ source }}">Last</a>
+    {% endif %}
+</div>
+{% endblock %}

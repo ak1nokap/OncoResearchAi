@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="hero" style="grid-template-columns: minmax(0, 1fr) 420px;">
+    <div>
+        <div class="eyebrow">Analytics</div>
+        <h1>See the research landscape <span class="accent">in real time</span></h1>
+        <p>
+            Monitor publication growth, source balance, dominant cancer areas, and leading AI methods without leaving the portal.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'research:paper_list' %}" class="button">Browse papers</a>
+            <a href="{% url 'research:chat' %}" class="button secondary">Open AI Workspace</a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="window-dots"><span></span><span></span><span></span></div>
+        <div class="preview-metrics">
+            <div class="mini-panel">
+                <div class="mini-label">Active papers</div>
+                <div class="mini-value">{{ total_papers }}</div>
+                <div class="mini-trend">+ corpus available</div>
+            </div>
+            <div class="mini-panel">
+                <div class="mini-label">PubMed</div>
+                <div class="mini-value">{{ pubmed_count }}</div>
+                <div class="mini-trend">+ peer reviewed</div>
+            </div>
+            <div class="mini-panel">
+                <div class="mini-label">Last 30 days</div>
+                <div class="mini-value">{{ recent_30_days_count }}</div>
+                <div class="mini-trend">+ recent additions</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Total papers</div>
+            <div class="stat-value">{{ total_papers }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">PubMed</div>
+            <div class="stat-value">{{ pubmed_count }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">arXiv</div>
+            <div class="stat-value">{{ arxiv_count }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Last 30 days</div>
+            <div class="stat-value">{{ recent_30_days_count }}</div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 6px;">
+    <div class="grid grid-2">
+        <section class="card">
+            <h2>Papers by month</h2>
+            <canvas id="papersByYearChart"></canvas>
+        </section>
+
+        <section class="card">
+            <h2>Top sources</h2>
+            <canvas id="sourceChart"></canvas>
+        </section>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 6px;">
+    <div class="grid grid-2">
+        <section class="card">
+            <h2>Top cancer types</h2>
+            <canvas id="cancerTypeChart"></canvas>
+        </section>
+
+        <section class="card">
+            <h2>Top AI methods</h2>
+            <canvas id="aiMethodChart"></canvas>
+        </section>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 6px;">
+    <div class="grid grid-2">
+        <section class="card">
+            <h2>Latest papers</h2>
+            <ul class="list-clean">
+                {% for paper in latest_papers %}
+                <li>
+                    <a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer"><strong>{{ paper.title }}</strong></a>
+                    <div class="meta-line">{{ paper.source }} | {{ paper.cancer_type|default:"unknown" }} | {{ paper.ai_method|default:"unknown" }} | {{ paper.published_date|date:"Y-m-d" }}</div>
+                </li>
+                {% empty %}
+                <li class="muted">No papers yet.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Top cancer types table</h2>
+            <ul class="list-clean">
+                {% for item in cancer_type_counts %}
+                <li>
+                    <strong>{{ item.cancer_type }}</strong>
+                    <div class="meta-line">{{ item.count }} papers</div>
+                </li>
+                {% empty %}
+                <li class="muted">No data yet.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+</section>
+
+<script>
+    Chart.defaults.color = "#aaa3b2";
+    Chart.defaults.borderColor = "rgba(255,255,255,0.08)";
+
+    const monthLabels = [{% for item in papers_by_month %}"{{ item.month }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const monthCounts = [{% for item in papers_by_month %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+    const sourceLabels = [{% for item in source_counts %}"{{ item.source }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const sourceCounts = [{% for item in source_counts %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+    const cancerLabels = [{% for item in cancer_type_counts %}"{{ item.cancer_type|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const cancerCounts = [{% for item in cancer_type_counts %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+    const aiLabels = [{% for item in ai_method_counts %}"{{ item.ai_method|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const aiCounts = [{% for item in ai_method_counts %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+    new Chart(document.getElementById("papersByYearChart"), {
+        type: "line",
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: "Papers",
+                data: monthCounts,
+                borderColor: "#ff727f",
+                backgroundColor: "rgba(255, 114, 127, 0.12)",
+                tension: 0.35,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { color: "rgba(255,255,255,0.04)" }
+                },
+                y: {
+                    grid: { color: "rgba(255,255,255,0.05)" }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById("sourceChart"), {
+        type: "doughnut",
+        data: {
+            labels: sourceLabels,
+            datasets: [{
+                data: sourceCounts,
+                backgroundColor: ["#ff6b78", "#ff9b73", "#7c6676", "#504554"],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: "#f6f2f4" }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById("cancerTypeChart"), {
+        type: "bar",
+        data: {
+            labels: cancerLabels,
+            datasets: [{
+                label: "Papers",
+                data: cancerCounts,
+                backgroundColor: "#ff727f",
+                borderRadius: 12
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    new Chart(document.getElementById("aiMethodChart"), {
+        type: "bar",
+        data: {
+            labels: aiLabels,
+            datasets: [{
+                label: "Papers",
+                data: aiCounts,
+                backgroundColor: "#ff9b73",
+                borderRadius: 12
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endblock %}

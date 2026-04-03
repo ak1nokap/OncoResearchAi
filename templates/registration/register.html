@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+    <section class="auth-panel">
+        <div class="eyebrow">Start Free Trial</div>
+        <h2 style="font-size: clamp(2rem, 4vw, 3.4rem); line-height: 0.96; margin-bottom: 12px;">Create your <span class="accent">research workspace</span></h2>
+        <p class="muted" style="margin-top: 0;">Register to save searches, build reading lists, and personalize how you review oncology AI literature.</p>
+
+        {% if form.non_field_errors %}
+        <div class="form-errors" style="margin: 18px 0 0;">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <form method="post" class="form-stack" style="margin-top: 24px;">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <div class="field-help" style="margin-top: 8px;">{{ field.help_text|safe }}</div>
+                {% endif %}
+                {% if field.errors %}
+                <div class="errorlist">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit">Create account</button>
+        </form>
+
+        <div class="divider-line"></div>
+        <p class="muted">Already have an account? <a href="{% url 'login' %}" style="color: #ffd2d7;">Log in</a>.</p>
+    </section>
+</div>
+{% endblock %}

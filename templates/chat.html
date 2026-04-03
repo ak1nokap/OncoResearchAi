@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}AI Workspace{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <div class="eyebrow">AI Workspace</div>
+        <h1>Ask questions or generate a <span class="accent">literature review</span></h1>
+        <p>
+            One interface for two jobs: quick evidence-grounded answers and structured mini literature reviews
+            based on the most relevant papers from your database.
+        </p>
+    </div>
+    <div class="hero-visual">
+        <div class="window-dots"><span></span><span></span><span></span></div>
+        <div class="mini-panel" style="height: calc(100% - 32px); display: grid; align-content: start; gap: 14px;">
+            <div class="mini-label">Modes</div>
+            <div class="summary">
+                Ask mode: retrieves papers and answers directly from them.<br>
+                Review mode: retrieves papers and writes a structured overview, methods, findings, and gaps summary.
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 8px;">
+    <div class="chat-shell">
+        <section class="card">
+            <form method="get" class="filters-form">
+                <div class="topbar-actions" style="margin-top: 0;">
+                    <a href="{% url 'research:chat' %}?mode=answer{% if query %}&q={{ query|urlencode }}{% endif %}"
+                       class="button {% if mode != 'answer' %}secondary{% endif %}">Ask AI</a>
+                    <a href="{% url 'research:chat' %}?mode=review{% if query %}&q={{ query|urlencode }}{% endif %}"
+                       class="button {% if mode != 'review' %}secondary{% endif %}">Literature Review</a>
+                </div>
+                <div class="muted" style="margin-top: 2px;">
+                    {% if mode == 'review' %}
+                    Generate a structured overview from the most relevant papers in your database.
+                    {% else %}
+                    Get a direct answer grounded in the most relevant papers in your database.
+                    {% endif %}
+                </div>
+                <input type="hidden" name="mode" value="{{ mode }}">
+                <div class="filters-row" style="grid-template-columns: 1fr;">
+                    <input
+                        type="text"
+                        name="q"
+                        placeholder="{% if mode == 'review' %}Example: deep learning for lung cancer detection in CT{% else %}Example: What AI methods are most common for lung cancer detection?{% endif %}"
+                        value="{{ query }}"
+                    >
+                </div>
+                <div class="topbar-actions">
+                    <button type="submit">{% if mode == 'review' %}Generate{% else %}Ask{% endif %}</button>
+                </div>
+            </form>
+        </section>
+
+        {% if answer %}
+        <section class="card">
+            <h2>Answer</h2>
+            <div class="chat-answer">{{ answer }}</div>
+        </section>
+        {% endif %}
+
+        {% if review %}
+        <section class="card">
+            <h2>Literature Review</h2>
+            <div class="chat-answer">{{ review }}</div>
+        </section>
+        {% endif %}
+
+        {% if papers %}
+        <section class="card">
+            <h2>{% if mode == 'review' %}Sources Used{% else %}Retrieved Sources{% endif %}</h2>
+            <div class="grid">
+                {% for paper in papers %}
+                <div class="source-item">
+                    <strong>
+                        <a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ paper.title }}</a>
+                    </strong>
+                    <div class="paper-meta" style="margin-top: 8px;">
+                        {{ paper.source }} | {{ paper.cancer_type|default:"unknown" }} | {{ paper.ai_method|default:"unknown" }} | {{ paper.published_date|date:"Y-m-d" }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if not answer and not review and not papers %}
+        <section class="card">
+            <h2>Examples</h2>
+            <div class="summary">
+                {% if mode == 'review' %}
+                Deep learning in breast cancer mammography<br>
+                Radiomics for lung cancer diagnosis<br>
+                Multimodal AI for colorectal cancer detection
+                {% else %}
+                What imaging models are common in breast cancer detection?<br>
+                Which recent papers cover melanoma image classification?<br>
+                What trends show up in lung cancer screening with deep learning?
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
