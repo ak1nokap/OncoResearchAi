@@ -89,7 +89,7 @@ Before you start, make sure you have:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/oncoresearch-ai.git
+git clone https://github.com/ak1nokap/oncoresearch-ai.git
 cd oncoresearch-ai
 ```
 
@@ -312,6 +312,6 @@ media/
 - Add side-by-side topic comparison
 - Improve deployment with Docker and production configs
 
-## License
-
-Add your preferred license here, for example MIT.
+## Contact Me
+- email: akmushan@gmail.com
+- TG: @akinokap
