@@ -97,6 +97,14 @@
             min-height: 78px;
         }
 
+        .header-panel {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: space-between;
+        }
+
         .brand {
             display: inline-flex;
             align-items: center;
@@ -142,6 +150,13 @@
             gap: 12px;
             flex-wrap: wrap;
             justify-content: flex-end;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            min-width: 48px;
+            padding: 0 16px;
+            box-shadow: none;
         }
 
         .pill,
@@ -207,6 +222,18 @@
             gap: 28px;
             align-items: center;
             padding: 42px 0 26px;
+        }
+
+        .hero-compact {
+            grid-template-columns: minmax(0, 1fr) 360px;
+        }
+
+        .hero-wide {
+            grid-template-columns: minmax(0, 1fr) 420px;
+        }
+
+        .hero-narrow {
+            grid-template-columns: minmax(0, 1fr) 340px;
         }
 
         .eyebrow {
@@ -684,7 +711,6 @@
         }
 
         @media (max-width: 760px) {
-            .site-header-inner,
             .hero,
             .grid-2,
             .filters-row,
@@ -696,12 +722,42 @@
 
             .site-header-inner {
                 min-height: auto;
-                padding: 16px 0;
+                padding: 14px 0;
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .main-content {
+                padding: 18px 0 48px;
+            }
+
+            .mobile-menu-toggle {
+                display: inline-flex;
+                margin-left: auto;
+            }
+
+            .header-panel {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+                padding: 14px;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                border-radius: 22px;
+                background: rgba(26, 22, 33, 0.96);
+                box-shadow: var(--shadow);
+            }
+
+            .header-panel.is-open {
+                display: flex;
             }
 
             .nav,
             .header-actions {
                 width: 100%;
+                flex-direction: column;
+                align-items: stretch;
             }
 
             .header-actions {
@@ -710,6 +766,137 @@
 
             .hero {
                 padding-top: 18px;
+                gap: 18px;
+            }
+
+            .hero-actions,
+            .topbar-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .hero-actions > *,
+            .topbar-actions > *,
+            .header-actions > *,
+            .nav > * {
+                width: 100%;
+            }
+
+            .nav a,
+            .header-actions .pill,
+            .header-actions .button,
+            .header-actions button,
+            .topbar-actions .button,
+            .topbar-actions button {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .hero-visual {
+                min-height: auto;
+                padding: 20px;
+            }
+
+            .paper-title {
+                font-size: clamp(1.35rem, 7vw, 1.85rem);
+            }
+
+            .stat-value {
+                font-size: clamp(1.8rem, 10vw, 2.6rem);
+                word-break: break-word;
+            }
+
+            .stat-note,
+            .paper-meta,
+            .summary,
+            .chat-answer {
+                word-break: break-word;
+            }
+
+            .hero h1,
+            .section-title {
+                font-size: clamp(2rem, 11vw, 2.8rem);
+                line-height: 0.98;
+            }
+
+            .hero p,
+            .section-copy,
+            .summary,
+            .chat-answer,
+            .paper-meta,
+            .stat-note {
+                font-size: 0.96rem;
+                line-height: 1.7;
+            }
+
+            .section {
+                padding: 18px 0;
+            }
+
+            .card,
+            .feature-panel,
+            .auth-panel,
+            .stat,
+            .source-item {
+                padding: 18px;
+            }
+
+            .filters-form {
+                gap: 12px;
+            }
+
+            input,
+            select,
+            textarea {
+                min-height: 50px;
+                padding: 13px 14px;
+                border-radius: 16px;
+            }
+
+            .button,
+            button,
+            .pill,
+            .pill-accent,
+            .pill-ghost,
+            .pill-muted {
+                min-height: 50px;
+                padding: 0 18px;
+            }
+
+            .badges {
+                gap: 8px;
+            }
+
+            .badge {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+                border-radius: 14px;
+            }
+
+            .pagination {
+                justify-content: stretch;
+            }
+
+            .pagination a,
+            .pagination span {
+                width: 100%;
+            }
+
+            .preview-metrics {
+                gap: 10px;
+            }
+
+            .mini-panel {
+                padding: 14px;
+            }
+
+            .mini-value {
+                font-size: 1.6rem;
+            }
+
+            .window-dots {
+                margin-bottom: 16px;
             }
 
             .hero-visual,
@@ -724,6 +911,65 @@
                 width: min(var(--max-width), calc(100% - 22px));
             }
         }
+
+        @media (max-width: 420px) {
+            .container {
+                width: min(var(--max-width), calc(100% - 16px));
+            }
+
+            .site-header-inner {
+                padding: 12px 0;
+            }
+
+            .brand {
+                gap: 10px;
+                font-size: 1rem;
+            }
+
+            .brand-mark {
+                width: 30px;
+                height: 30px;
+                border-radius: 10px;
+            }
+
+            .hero {
+                padding-top: 12px;
+            }
+
+            .hero h1,
+            .section-title {
+                font-size: clamp(1.8rem, 10vw, 2.4rem);
+            }
+
+            .card,
+            .feature-panel,
+            .auth-panel,
+            .stat,
+            .source-item,
+            .hero-visual {
+                padding: 16px;
+                border-radius: 18px;
+            }
+
+            .button,
+            button,
+            .pill,
+            .pill-accent,
+            .pill-ghost,
+            .pill-muted {
+                min-height: 48px;
+                font-size: 0.95rem;
+            }
+
+            .mobile-menu-toggle {
+                min-width: 44px;
+                padding: 0 14px;
+            }
+
+            .stat-value {
+                font-size: clamp(1.7rem, 9vw, 2.3rem);
+            }
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -736,28 +982,34 @@
                 <span>OncoResearch AI</span>
             </a>
 
-            <nav class="nav" aria-label="Main navigation">
-                <a href="{% url 'research:home' %}">Overview</a>
-                <a href="{% url 'research:paper_list' %}">Papers</a>
-                <a href="{% url 'research:dashboard' %}">Analytics</a>
-                <a href="{% url 'research:chat' %}">AI Workspace</a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'research:saved_papers' %}">Saved</a>
-                {% endif %}
-                <a href="/rss/">RSS</a>
-            </nav>
+            <button type="button" class="button secondary mobile-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-panel">
+                Menu
+            </button>
 
-            <div class="header-actions">
-                {% if user.is_authenticated %}
-                <span class="pill pill-muted">{{ user.username }}</span>
-                <form method="post" action="{% url 'logout' %}" style="margin:0;">
-                    {% csrf_token %}
-                    <button type="submit" class="secondary">Log out</button>
-                </form>
-                {% else %}
-                <a href="{% url 'login' %}" class="pill pill-ghost">Log in</a>
-                <a href="{% url 'research:register' %}" class="pill pill-accent">Start Free Trial</a>
-                {% endif %}
+            <div class="header-panel" id="header-panel">
+                <nav class="nav" aria-label="Main navigation">
+                    <a href="{% url 'research:home' %}">Overview</a>
+                    <a href="{% url 'research:paper_list' %}">Papers</a>
+                    <a href="{% url 'research:dashboard' %}">Analytics</a>
+                    <a href="{% url 'research:chat' %}">AI Workspace</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'research:saved_papers' %}">Saved</a>
+                    {% endif %}
+                    <a href="/rss/">RSS</a>
+                </nav>
+
+                <div class="header-actions">
+                    {% if user.is_authenticated %}
+                    <span class="pill pill-muted">{{ user.username }}</span>
+                    <form method="post" action="{% url 'logout' %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="secondary">Log out</button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="pill pill-ghost">Log in</a>
+                    <a href="{% url 'research:register' %}" class="pill pill-accent">Start Free Trial</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </header>
@@ -772,5 +1024,18 @@
         AI Cancer Research Portal built for discovery, monitoring, and evidence-led oncology research.
     </footer>
 </div>
+<script>
+    (function () {
+        const toggle = document.getElementById("mobile-menu-toggle");
+        const panel = document.getElementById("header-panel");
+
+        if (!toggle || !panel) return;
+
+        toggle.addEventListener("click", function () {
+            const isOpen = panel.classList.toggle("is-open");
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+    })();
+</script>
 </body>
 </html>
